@@ -20,6 +20,7 @@ today = ["chrono"]
 test_lib = []
 
 [dependencies]
+morny_utils = { path = "morny_utils" }
 
 # Template dependencies
 chrono = { version = "0.4.38", optional = true }
