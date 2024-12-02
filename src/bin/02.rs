@@ -10,41 +10,28 @@ pub fn get_numbers(input: &str) -> Vec<Vec<i32>> {
         }).collect::<Vec<Vec<_>>>()
 }
 
-#[derive(PartialEq)]
-enum Dir { Up, Down, None }
-
-pub fn part_one(input: &str) -> Option<u32> {
-    let nums = get_numbers(input);
-
-    let mut safe = 0;
-    for l in nums {
-        let mut dir: Dir = Dir::None;
-        let mut lastDiff : i32 = 0;
-        let mut bad = false;
-        for win in l.windows(2)
-        {
-            let diff = win[1] - win[0];
-            if (lastDiff != 0) &&
-                (lastDiff.signum() != diff.signum()) {
-                bad = true;
-                break;
-            }
-            lastDiff = diff;
-
-            if diff.abs() < 1 || diff.abs() > 3 {
-                bad = true;
-                break;
-            }
-        }
-
-        if bad == false {
-            safe = safe + 1;
-        }
-    }
-
-    Some(safe)
+pub fn safe_1(vals: &&Vec<i32>) -> bool {
+    let mut last_sign: i32 = 0;
+    vals.windows(2).all(|v| {
+        let diff = v[1] - v[0];
+        let s = ((diff.signum() == last_sign) || (last_sign == 0)) &&
+            diff.abs() >=1 && diff.abs() <= 3;
+        last_sign = diff.signum();
+        s
+    })
 }
 
-pub fn part_two(_input: &str) -> Option<u32> {
-    None
+pub fn safe_2(vals: &&Vec<i32>) -> bool {
+    (0..vals.len()).any(|index| {
+        let mut v = vals.to_vec();
+        v.remove(index);
+        safe_1(&&v)
+    })
+}
+pub fn part_one(input: &str) -> Option<u32> {
+    Some(get_numbers(input).iter().filter(safe_1).count() as u32)
+}
+
+pub fn part_two(input: &str) -> Option<u32> {
+    Some(get_numbers(input).iter().filter(safe_2).count() as u32)
 }
