@@ -82,13 +82,14 @@ pub fn part_two(input: &str) -> Option<u32> {
         {
             let mut last: Option<i32> = None;
             let mut last_sign = 0;
-
+            let mut err_lock = 0;
             ok = true;
             for (index, b) in l.split_ascii_whitespace().map(|s| s.parse::<i32>().unwrap()).enumerate() {
                 max = max.max(index);
                 if index == ignore {
                     continue;
                 }
+                err_lock = index;
                 if let Some(a) = last {
                     let diff = b - a;
                     let sig = diff.signum();
@@ -108,10 +109,16 @@ pub fn part_two(input: &str) -> Option<u32> {
                 }
                 last = Some(b);
             }
+
             if ok
             {
                 break;
             }
+            else if ignore > err_lock
+            {
+                break;
+            }
+
             ignore = ignore + 1;
         }
         if ok {
