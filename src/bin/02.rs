@@ -15,7 +15,7 @@ pub fn safe_1(vals: &&Vec<i32>) -> bool {
     vals.windows(2).all(|v| {
         let diff = v[1] - v[0];
         let s = ((diff.signum() == last_sign) || (last_sign == 0)) &&
-            diff.abs() >=1 && diff.abs() <= 3;
+            diff.abs() >= 1 && diff.abs() <= 3;
         last_sign = diff.signum();
         s
     })
@@ -29,7 +29,36 @@ pub fn safe_2(vals: &&Vec<i32>) -> bool {
     })
 }
 pub fn part_one(input: &str) -> Option<u32> {
-    Some(get_numbers(input).iter().filter(safe_1).count() as u32)
+    let mut count = 0;
+    for l in input.lines() {
+        let mut ok = true;
+        let mut last : Option<i32> = None;
+        let mut last_sign  = 0;
+        for b in l.split_ascii_whitespace().map(|s| s.parse::<i32>().unwrap()).into_iter() {
+            if let Some(a) = last {
+                let diff = (b - a);
+                let sig = diff.signum();
+                let diff = diff.abs();
+                if diff < 1 || diff > 3
+                {
+                    ok = false;
+                    break;
+                }
+
+                if sig != last_sign && last_sign != 0
+                {
+                    ok = false;
+                    break;
+                }
+                last_sign = sig;
+            }
+            last = Some(b);
+        }
+        if ok {
+            count = count + 1;
+        }
+    }
+    Some(count)
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
