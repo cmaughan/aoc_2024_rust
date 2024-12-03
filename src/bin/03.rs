@@ -1,11 +1,12 @@
 advent_of_code::solution!(3);
 
 use regex::Regex;
+use once_cell::sync::Lazy;
+static REGEX_1: Lazy<Regex> = Lazy::new(|| {Regex::new(r"mul\((\d{1,3}),(\d{1,3})\)").unwrap() });
+static REGEX_2: Lazy<Regex> =  Lazy::new(|| {Regex::new(r"(mul\((\d{1,3}),(\d{1,3})\)|do\(\)|don't\(\))").unwrap() });
 
 pub fn part_one(input: &str) -> Option<u32> {
-    let re = Regex::new(r"mul\((\d{1,3}),(\d{1,3})\)").unwrap();
-
-    let ret = re.captures_iter(input).map(|cap| {
+    let ret = REGEX_1.captures_iter(input).map(|cap| {
         cap[1].parse::<i64>().unwrap() * cap[2].parse::<i64>().unwrap()
     }).sum::<i64>();
 
@@ -13,11 +14,9 @@ pub fn part_one(input: &str) -> Option<u32> {
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    let re = Regex::new(r"(mul\((\d{1,3}),(\d{1,3})\)|do\(\)|don't\(\))").unwrap();
-
     let mut ret = 0;
     let mut ignore = false;
-    for cap in re.captures_iter(input) {
+    for cap in REGEX_2.captures_iter(input) {
         if let Some(thing) = cap.get(1) {
             if thing.as_str().starts_with("do(") {
                 ignore = false;
