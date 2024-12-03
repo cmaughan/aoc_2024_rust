@@ -24,15 +24,9 @@ pub fn part_two(input: &str) -> Option<u32> {
             else if thing.as_str().starts_with("don't") {
                 ignore = true;
             }
-            else {
-                if ignore
-                {
-                    continue;
-                }
-                if let Some(x) = cap.get(2) {
-                    if let Some(y) = cap.get(3) {
+            else if !ignore {
+                if let (Some(x), Some(y)) = (cap.get(2), cap.get(3)) {
                         ret += x.as_str().parse::<i64>().unwrap() * y.as_str().parse::<i64>().unwrap();
-                    }
                 }
             }
         }
