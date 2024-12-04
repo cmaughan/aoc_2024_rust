@@ -34,15 +34,15 @@ pub fn part_one(input: &str) -> Option<u32> {
         .collect();
 
     let mut count = 0;
-    for y in 0..lines.len() {
-        for x in 0..lines[0].len() {
-            if lines[y][x] == b'X' {
+    for y in 0..lines.len() as i64 {
+        for x in 0..lines[0].len() as i64 {
+            if lines[y as usize][x as usize] == b'X' {
                 for yy in -1..=1 as i64 {
                     for xx in -1..=1 as i64 {
                         if xx == 0 && yy == 0 {
                             continue;
                         }
-                        count += search(&lines, b"XMAS", x as i64, y as i64, xx, yy) as u32;
+                        count += search(&lines, b"MAS", x + xx, y + yy, xx, yy) as u32;
                     }
                 }
             }
