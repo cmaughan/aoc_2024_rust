@@ -1,5 +1,5 @@
 use std::collections::{HashMap, HashSet};
-
+use std::cmp::Ordering::*;
 advent_of_code::solution!(5);
 
 struct Input {
@@ -32,82 +32,23 @@ fn parse(input: &str) -> Input {
 pub fn part_one(input: &str) -> Option<u32> {
     let data = parse(input);
 
-    let mut count = 0;
-    // a,b : a must be before b.
-    for l in data.updates {
-        let mut invalid = false;
-        for i in 0..l.len() {
-            let num = l[i];
-            let rule = data.rules.get(&num);
-
-            // If our number has a rule
-            if let Some(r) = rule {
-                for j in (0..i).rev() {
-                    let prev_num = l[j];
-                    if r.contains(&prev_num)
-                    {
-                       invalid = true;
-                    }
-                }
-            }
-            if invalid {
-                break;
-            }
-        }
-        if !invalid {
-            count = count + l[l.len() / 2];
-        }
-    }
-
-    Some(count)
+    Some(data.updates.iter()
+        .filter(|update| !update.is_sorted_by(|a, b| data.rules[a].contains(b)))
+        .map(|update| {
+            update[update.len() / 2]
+        })
+        .sum())
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    let data = parse(input);
+    let mut data = parse(input);
 
-    let mut count = 0;
-    // a,b : a must be before b.
-    for mut l in data.updates {
-        let mut add_it = false;
-        loop {
-            let mut invalid = false;
-            for i in 0..l.len() {
-                let num = l[i];
-                let rule = data.rules.get(&num);
-
-                // If our number has a rule
-                if let Some(r) = rule {
-                    let mut min_swap = i;
-                    for j in (0..i).rev() {
-                        let prev_num = l[j];
-                        if r.contains(&prev_num)
-                        {
-                            min_swap = j;
-                            add_it = true;
-                            break;
-                        }
-                    }
-
-                    if min_swap != i {
-                        let removed = l.remove(i);
-                        l.insert(min_swap, removed);
-                        add_it = true;
-                        invalid = true;
-                    }
-                }
-                if invalid {
-                    break;
-                }
-            }
-            if !invalid {
-                if add_it {
-                    count += l[l.len() / 2];
-                }
-                break;
-            }
-        }
-    }
-
-    Some(count)
+    Some(data.updates.iter_mut()
+        .filter(|update| !update.is_sorted_by(|a, b| data.rules[a].contains(b)))
+        .map(|update| {
+            update.sort_by(|a, b| if data.rules[a].contains(b) { Less } else { Greater });
+            update[update.len() / 2]
+        })
+        .sum())
 }
 
