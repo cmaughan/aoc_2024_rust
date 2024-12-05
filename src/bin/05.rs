@@ -4,22 +4,23 @@ advent_of_code::solution!(5);
 
 struct Input {
     rules: HashMap<u32, HashSet<u32>>,
-    updates: Vec<Vec<u32>>
+    updates: Vec<Vec<u32>>,
 }
 
 fn parse(input: &str) -> Input {
-    let rules_updates = input.split("\n\n").collect::<Vec<_>>();
-    let rs = rules_updates[0].lines().map(|l| {
-        let mut nums = l.split("|");
-        (nums.next().unwrap().parse::<u32>().unwrap(), nums.next().unwrap().parse::<u32>().unwrap())
-    }).collect::<Vec<(u32, u32)>>();
+    let (rule_section, update_section) = input.split_once("\n\n").unwrap();
 
     let mut rules: HashMap<u32, HashSet<u32>> = HashMap::new();
-    for r in &rs {
-        rules.entry(r.0).or_insert(HashSet::new()).insert(r.1);
+    let rule_pairs = rule_section.lines()
+        .map(|l| l.split_once("|").unwrap())
+        .map(|(a, b)| (a.parse::<u32>().unwrap(), b.parse::<u32>().unwrap()));
+
+    for (x, y) in rule_pairs
+    {
+        rules.entry(x).or_insert_with(HashSet::new).insert(y);
     }
 
-    let updates = rules_updates[1].lines().
+    let updates = update_section.lines().
         map(|l|
             l.split(",")
                 .map(|v|
