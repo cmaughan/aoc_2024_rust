@@ -1,6 +1,5 @@
 use std::collections::HashSet;
 use std::hash::Hash;
-use itertools::Itertools;
 
 advent_of_code::solution!(6);
 
@@ -92,17 +91,23 @@ pub fn part_two(input: &str) -> Option<u32> {
     let paths = search(&data);
 
     let mut visits: HashSet<((i32, i32), Dir)> = HashSet::new();
-    let mut detect_loop = |data: &Input| -> bool {
-        let mut direction = Dir::Up;
-        let mut guard = data.guard;
+    let mut count: u32 = 0;
+
+    let mut direction = Dir::Up;
+    let mut next = data.guard;
+
+    for v in paths {
+        data.data[v.0 as usize][v.1 as usize] = b'#';
+
         visits.clear();
-        visits.insert((guard, direction));
+        visits.insert((next, direction));
+
         loop {
-            let next = move_pos(guard, &direction);
+            next = move_pos(next, &direction);
 
             // Off the map, done
             if next.0 < 0 || next.1 < 0 || next.0 >= data.height || next.1 >= data.width {
-                return false;
+                break;
             }
 
             if data.data[next.0 as usize][next.1 as usize] == b'#' {
@@ -110,21 +115,13 @@ pub fn part_two(input: &str) -> Option<u32> {
                 continue;
             }
 
-            guard = next;
-            if visits.contains(&(guard, direction))
+            if visits.contains(&(next, direction))
             {
-                return true;
+                count = count + 1;
             }
-            visits.insert((guard, direction));
+            visits.insert((next, direction));
         }
-    };
 
-    let mut count: u32 = 0;
-    for v in paths {
-        data.data[v.0 as usize][v.1 as usize] = b'#';
-        if detect_loop(&data) {
-            count = count + 1;
-        }
         data.data[v.0 as usize][v.1 as usize] = b'.';
     }
 
