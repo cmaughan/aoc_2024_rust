@@ -91,10 +91,11 @@ pub fn part_two(input: &str) -> Option<u32> {
 
     let paths = search(&data);
 
-    let detect_loop = |data: &Input| -> bool {
+    let mut visits: HashSet<((i32, i32), Dir)> = HashSet::new();
+    let mut detect_loop = |data: &Input| -> bool {
         let mut direction = Dir::Up;
         let mut guard = data.guard;
-        let mut visits: HashSet<((i32, i32), Dir)> = HashSet::new();
+        visits.clear();
         visits.insert((guard, direction));
         loop {
             let next = move_pos(guard, &direction);
@@ -110,7 +111,7 @@ pub fn part_two(input: &str) -> Option<u32> {
             }
 
             guard = next;
-            if visits.iter().contains(&(guard, direction))
+            if visits.contains(&(guard, direction))
             {
                 return true;
             }
@@ -130,19 +131,3 @@ pub fn part_two(input: &str) -> Option<u32> {
     Some(count)
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_part_one() {
-        let result = part_one(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
-    }
-
-    #[test]
-    fn test_part_two() {
-        let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
-    }
-}
