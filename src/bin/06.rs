@@ -82,6 +82,8 @@ fn search(data: &Input) -> HashSet<(i32, i32)> {
 }
 pub fn part_one(input: &str) -> Option<u32> {
     let data = parse(input);
+    //let grid = Grid::parse(input);
+
     Some(search(&data).len() as u32 + 1)
 }
 

@@ -1,3 +1,6 @@
+pub mod vec2d;
+pub mod grid2d;
+
 use itertools::Itertools;
 
 pub fn add(left: u64, right: u64) -> u64 {
